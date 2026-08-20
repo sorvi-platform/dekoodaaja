@@ -1,0 +1,13 @@
+.{
+    .name = .dekoodaaja,
+    .version = "0.16.0",
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "root.zig",
+        "fmt",
+        "LICENSE",
+    },
+    .fingerprint = 0x273507e6388e420c,
+}

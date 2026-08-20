@@ -1,0 +1,35 @@
+.{
+    .name = .decbench,
+    .version = "0.16.0",
+    .dependencies = .{
+        .dekoodaaja = .{
+            .path = "../.",
+        },
+        .@"build.crab" = .{
+            .url = "git+https://github.com/Cloudef/build.crab.git#834e2e0a98efd5f9b29abad212150c0423e06815",
+            .hash = "build_crab-0.3.0-V2z3N1GeAABlxXlHir0PHyQ5-rwVv1BP8VHytRnFdUSS",
+        },
+        .qoi = .{
+            .url = "git+https://github.com/phoboslab/qoi.git#97bacc86a9c4abf5a2d452102dc26546c4c670b9",
+            .hash = "N-V-__8AAJLMAABRetoonVlKKPsffx5iBCbyMe3zIEbpiEdJ",
+        },
+        .@"qoi-simd" = .{
+            .url = "git+https://github.com/chocolate42/qoi-simd.git#be65722aefad74f68563d11e7fa4be4aaf751d27",
+            .hash = "N-V-__8AAMgWAgAy2T_PKIikQmlwY5xIdQp8afiRoN8hSLJj",
+        },
+        .magicqoi = .{
+            .url = "git+https://github.com/marty1885/magicqoi.git#55fad90349d02dccf1298651877210934ce169ae",
+            .hash = "N-V-__8AALtjBgA5JpcTBrez2WFVvq3PyHDBh4k__PGrRODq",
+        },
+        .@"zig-qoi" = .{
+            .url = "git+https://github.com/ikskuh/zig-qoi.git#4abad4b8a5dfa5dc2bcdd22f7844901d5f3d29eb",
+            .hash = "qoi-0.1.0-5Hmo8h9rAAAM9dNYAHzY4iCP5LeCN54nzd0zEf9ebjUw",
+        },
+        .zqoi = .{
+            .url = "git+https://codeberg.org/Pivok/zqoi.git#6c5c0d2803a5b01a3e4fdebadfdb93fde0e2b1fd",
+            .hash = "zqoi-0.5.1-9-SSGnFTAABlwxf9UHNAo3LvUPIrEP-KNpwHaMPSq7ML",
+        },
+    },
+    .paths = .{""},
+    .fingerprint = 0xc6977ba618dc6a3d,
+}

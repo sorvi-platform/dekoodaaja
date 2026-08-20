@@ -1,0 +1,22 @@
+[package]
+name = "bench"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "ffi"
+path = "ffi.rs"
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+rapid-qoi = "0.6.1"
+qoi-rust = { package = "qoi", version = "0.4.1" }
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = false
+
+[profile.small]
+inherits = "release"
+opt-level = "z"
