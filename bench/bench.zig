@@ -154,16 +154,16 @@ const QoiRustDecoder = struct {
     }
 };
 
-const decoders = dekoodaaja.all_decoders ++ .{
+const decoders = dekoodaaja.all_decoders ++ (if (build_options.external) .{
     QoiDecoder,
     QoiSimdDecoder,
     MagicQoiDecoder,
     ZigQoiDecoder,
     ZQoiDecoder,
-} ++ if (build_options.rust) .{
+} else .{}) ++ (if (build_options.rust) .{
     RapidQoiDecoder,
     QoiRustDecoder,
-} else .{};
+} else .{});
 
 const Result = struct {
     ns: u64,

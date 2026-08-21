@@ -9,6 +9,8 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
+    const external = b.option(bool, "external", "include external decoders in benchmark") orelse true;
+
     const dekoodaaja = b.dependency("dekoodaaja", .{ .target = target, .optimize = optimize }).module("dekoodaaja");
     const zig_qoi = b.dependency("zig-qoi", .{ .target = target, .optimize = optimize }).module("qoi");
     zig_qoi.strip = false;
@@ -105,6 +107,7 @@ pub fn build(b: *std.Build) void {
     };
 
     const include_rust = D: {
+        if (!external) break :D false;
         if (@import("builtin").zig_version.minor <= 15) break :D false;
         _ = std.process.run(b.allocator, b.graph.io, .{ .argv = &.{ "cargo", "version" } }) catch break :D false;
         break :D true;
@@ -112,6 +115,7 @@ pub fn build(b: *std.Build) void {
 
     const opts = b.addOptions();
     opts.addOption(bool, "rust", include_rust);
+    opts.addOption(bool, "external", external);
     const bench = b.addExecutable(.{
         .name = "bench",
         .root_module = b.createModule(.{
