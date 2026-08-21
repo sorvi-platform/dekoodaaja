@@ -112,6 +112,14 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Erro
     var pixel: Pixel = .black;
     var lut: [64]Pixel = undefined;
     memset(Pixel, &lut, .transparent);
+
+    // Handle <https://github.com/phoboslab/qoi/issues/258>
+    // Initial QOI_OP_RUN has to be stored into the LUT
+    switch ((try source.peekStruct(Op, native_endian)).toInt()) {
+        Op.rle(1).toInt()...Op.rle(62).toInt() => lut[pixel.hash()] = pixel,
+        else => {},
+    }
+
     loop: while (index < buffer.len) : (index += 1) {
         const op = try source.takeStruct(Op, native_endian);
         switch (op.toInt()) {
