@@ -154,6 +154,24 @@ const QoiRustDecoder = struct {
     }
 };
 
+const QoicoubehDecoder = struct {
+    const name = "qoicoubeh <https://github.com/elmarco/qoi-rust>";
+    const ext = "qoi";
+    const mime = "image/qoi";
+    const is_swizzled = true;
+
+    fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
+        const rs = @import("rs");
+        var hdr: rs.header = undefined;
+        const bytes: [*]u8 = @ptrCast(rs.decode_qoicoubeh(source.buffer.ptr, source.buffer.len, &hdr));
+        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
+        const raw_size = hdr.width * hdr.height * 4;
+        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.advance(raw_size);
+        return .{ .w = hdr.width, .h = hdr.height };
+    }
+};
+
 const decoders = dekoodaaja.all_decoders ++ (if (build_options.external) .{
     QoiDecoder,
     QoiSimdDecoder,
@@ -163,6 +181,7 @@ const decoders = dekoodaaja.all_decoders ++ (if (build_options.external) .{
 } else .{}) ++ (if (build_options.rust) .{
     RapidQoiDecoder,
     QoiRustDecoder,
+    QoicoubehDecoder,
 } else .{});
 
 const Result = struct {

@@ -57,3 +57,16 @@ pub unsafe extern "C" fn decode_rapid_qoi(
     (*hdr).height = header.height;
     pixels.as_mut_ptr()
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn decode_qoicoubeh(
+    bytes: *const u8,
+    len: usize,
+    hdr: *mut Header,
+) -> *mut u8 {
+    let input = std::slice::from_raw_parts(bytes, len);
+    let (header, mut pixels) = qoicoubeh::decode_to_vec(input).unwrap();
+    (*hdr).width = header.width;
+    (*hdr).height = header.height;
+    pixels.as_mut_ptr()
+}

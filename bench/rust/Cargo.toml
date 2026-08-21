@@ -11,6 +11,7 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 rapid-qoi = "0.6.1"
 qoi-rust = { package = "qoi", version = "0.4.1" }
+qoicoubeh = { package = "qoicoubeh", version = "0.5.0" }
 
 [profile.release]
 opt-level = 3
