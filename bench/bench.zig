@@ -224,7 +224,7 @@ fn runHarness(progress: std.Progress.Node) !void {
             const seconds = @as(f64, @floatFromInt(res.ns)) / std.time.ns_per_s;
             const gbps_in = in / seconds / 1e9;
             const gbps_out = out / seconds / 1e9;
-            std.debug.print("{s} ({s}): {d:.2} GB/s in, {d:.2} GB/s out, ({f})\n", .{
+            std.debug.print("{s} ({s}): {d:.2} GB/s in, {d:.2} GB/s out, {f}\n", .{
                 d.name,
                 d.mime,
                 gbps_in,
