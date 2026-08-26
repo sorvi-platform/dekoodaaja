@@ -115,16 +115,16 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Erro
 
     // Handle <https://github.com/phoboslab/qoi/issues/258>
     // Initial QOI_OP_RUN has to be stored into the LUT
-    switch ((try source.peekStruct(Op, native_endian)).toInt()) {
+    switch (@as(Op, @bitCast(try source.peekByte())).toInt()) {
         Op.rle(1).toInt()...Op.rle(62).toInt() => lut[pixel.hash()] = pixel,
         else => {},
     }
 
     loop: while (index < buffer.len) : (index += 1) {
-        const op = try source.takeStruct(Op, native_endian);
+        const op: Op = @bitCast(try source.takeByte());
         switch (op.toInt()) {
-            0b11111110 => pixel = Pixel.fromRgb((try source.takeArray(3)).*, pixel.a),
-            0b11111111 => pixel = Pixel.fromRgba((try source.takeArray(4)).*),
+            0b11111110 => pixel = Pixel.fromRgb((try takeArray(source, 3)), pixel.a),
+            0b11111111 => pixel = Pixel.fromRgba((try takeArray(source, 4))),
             0b00000000...0b00111111 => {
                 pixel = lut[op.data];
                 buffer[index] = pixel;
@@ -146,6 +146,13 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Erro
     sink.advance(index * @sizeOf(Pixel));
     std.debug.assert(sink.end == raw_size);
     return hdr;
+}
+
+// better codegen for ReleaseSmall
+inline fn takeArray(r: *std.Io.Reader, n: comptime_int) ![n]u8 {
+    const result = try @call(.always_inline, std.Io.Reader.peek, .{ r, n });
+    @call(.always_inline, std.Io.Reader.toss, .{ r, n });
+    return result[0..n].*;
 }
 
 // slightly modified @kprotty impl
