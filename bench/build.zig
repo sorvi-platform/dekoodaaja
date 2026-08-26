@@ -135,6 +135,7 @@ pub fn build(b: *std.Build) void {
             },
         }),
     });
+    bench.lto = .full;
 
     if (include_rust) {
         const rs = D: {
