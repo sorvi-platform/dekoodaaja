@@ -45,8 +45,8 @@ const Pixel = packed struct(u32) {
     const transparent: @This() = .{ .r = 0, .g = 0, .b = 0, .a = 0 };
 
     fn hash(self: @This()) u6 {
-        const vec: @Vector(4, u8) = .{ 7, 5, 3, 11 };
-        return @truncate(@reduce(.Add, self.toVector() *% vec));
+        const weights: @Vector(4, u8) = .{ 7, 5, 3, 11 };
+        return @truncate(@reduce(.Add, self.toVector() *% weights));
     }
 
     fn toVector(self: @This()) @Vector(4, u8) {
