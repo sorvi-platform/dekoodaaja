@@ -18,17 +18,16 @@ qoi-rust <https://github.com/aldanor/qoi-rust> (image/qoi): 0.32 GB/s in, 4.48 G
 qoicoubeh <https://github.com/elmarco/qoi-rust> (image/qoi): 0.34 GB/s in, 4.75 GB/s out, 220.692us
 ```
 
-It is not recommended to use this library with `ReleaseSmall` mode, if you care about speed as for now:
 ```
 # AMD Ryzen 7 3700X 8-Core Processor
 nix run .#bench -- -Doptimize=ReleaseSmall
-qoi (image/qoi): 0.13 GB/s in, 1.84 GB/s out, 568.854us
-qoi <https://github.com/phoboslab/qoi.git> (image/qoi): 0.17 GB/s in, 2.32 GB/s out, 452.358us
-qoi-simd <https://github.com/chocolate42/qoi-simd> (image/qoi): 0.11 GB/s in, 1.49 GB/s out, 702.453us
-magicqoi <https://github.com/marty1885/magicqoi> (image/qoi): 0.19 GB/s in, 2.67 GB/s out, 392.934us
-zig-qoi <https://github.com/ikskuh/zig-qoi> (image/qoi): 0.16 GB/s in, 2.17 GB/s out, 483.124us
-zqoi <https://codeberg.org/Pivok/zqoi.git> (image/qoi): 0.16 GB/s in, 2.26 GB/s out, 464.127us
-rapid-qoi <https://github.com/zakarumych/rapid-qoi> (image/qoi): 0.26 GB/s in, 3.62 GB/s out, 289.892us
-qoi-rust <https://github.com/aldanor/qoi-rust> (image/qoi): 0.19 GB/s in, 2.69 GB/s out, 389.992us
-qoicoubeh <https://github.com/elmarco/qoi-rust> (image/qoi): 0.19 GB/s in, 2.66 GB/s out, 393.472us
+qoi (image/qoi): 0.20 GB/s in, 2.82 GB/s out, 372.37us
+qoi <https://github.com/phoboslab/qoi.git> (image/qoi): 0.15 GB/s in, 2.11 GB/s out, 496.278us
+qoi-simd <https://github.com/chocolate42/qoi-simd> (image/qoi): 0.11 GB/s in, 1.49 GB/s out, 704.787us
+magicqoi <https://github.com/marty1885/magicqoi> (image/qoi): 0.18 GB/s in, 2.58 GB/s out, 407.179us
+zig-qoi <https://github.com/ikskuh/zig-qoi> (image/qoi): 0.11 GB/s in, 1.49 GB/s out, 703.877us
+zqoi <https://codeberg.org/Pivok/zqoi.git> (image/qoi): 0.15 GB/s in, 2.13 GB/s out, 491.462us
+rapid-qoi <https://github.com/zakarumych/rapid-qoi> (image/qoi): 0.25 GB/s in, 3.56 GB/s out, 294.652us
+qoi-rust <https://github.com/aldanor/qoi-rust> (image/qoi): 0.19 GB/s in, 2.64 GB/s out, 396.598us
+qoicoubeh <https://github.com/elmarco/qoi-rust> (image/qoi): 0.19 GB/s in, 2.66 GB/s out, 394.937us
 ```
