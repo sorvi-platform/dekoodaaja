@@ -40,9 +40,8 @@ const QoiDecoder = struct {
         const c = @import("qoi");
         var desc: c.qoi_desc = undefined;
         const bytes: [*]u8 = @ptrCast(c.qoi_decode(source.buffer.ptr, @intCast(source.buffer.len), &desc, 4));
-        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
         const raw_size = desc.width * desc.height * 4;
-        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
         return .{ .w = desc.width, .h = desc.height };
     }
@@ -58,9 +57,8 @@ const QoiSimdDecoder = struct {
         const c = @import("qoi-simd");
         var desc: c.qoi_desc = undefined;
         const bytes: [*]u8 = @ptrCast(c.qoi_decode(source.buffer.ptr, @intCast(source.buffer.len), &desc, 4));
-        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
         const raw_size = desc.width * desc.height * 4;
-        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
         return .{ .w = desc.width, .h = desc.height };
     }
@@ -78,9 +76,8 @@ const MagicQoiDecoder = struct {
         var h: u32 = undefined;
         var cc: u32 = undefined;
         const bytes: [*]u8 = c.magicqoi_decode_mem(source.buffer.ptr, source.buffer.len, &w, &h, &cc);
-        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
         const raw_size = w * h * 4;
-        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
         return .{ .w = w, .h = h };
     }
@@ -128,9 +125,8 @@ const RapidQoiDecoder = struct {
         const rs = @import("rs");
         var hdr: rs.header = undefined;
         const bytes: [*]u8 = @ptrCast(rs.decode_rapid_qoi(source.buffer.ptr, source.buffer.len, &hdr));
-        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
         const raw_size = hdr.width * hdr.height * 4;
-        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
         return .{ .w = hdr.width, .h = hdr.height };
     }
@@ -146,9 +142,8 @@ const QoiRustDecoder = struct {
         const rs = @import("rs");
         var hdr: rs.header = undefined;
         const bytes: [*]u8 = @ptrCast(rs.decode_qoi_rust(source.buffer.ptr, source.buffer.len, &hdr));
-        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
         const raw_size = hdr.width * hdr.height * 4;
-        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
         return .{ .w = hdr.width, .h = hdr.height };
     }
@@ -164,9 +159,8 @@ const QoicoubehDecoder = struct {
         const rs = @import("rs");
         var hdr: rs.header = undefined;
         const bytes: [*]u8 = @ptrCast(rs.decode_qoicoubeh(source.buffer.ptr, source.buffer.len, &hdr));
-        const allocating: *std.Io.Writer.Allocating = @fieldParentPtr("writer", sink);
         const raw_size = hdr.width * hdr.height * 4;
-        allocating.writer.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
+        sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
         return .{ .w = hdr.width, .h = hdr.height };
     }
