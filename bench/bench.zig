@@ -234,7 +234,7 @@ fn runHarness(progress: std.Progress.Node) !void {
     inline for (decoders) |d| {
         if (benchDecoder(d, &arena, root, &swizzled)) |res| {
             const in: f64 = @floatFromInt(res.in);
-            const out: f64 = @floatFromInt(raw_data.len * total_rounds);
+            const out: f64 = @floatFromInt(@as(u64, raw_data.len) * @as(u64, total_rounds));
             const seconds = @as(f64, @floatFromInt(res.ns)) / std.time.ns_per_s;
             const gbps_in = in / seconds / 1e9;
             const gbps_out = out / seconds / 1e9;
