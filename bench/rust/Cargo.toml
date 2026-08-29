@@ -6,7 +6,7 @@ edition = "2021"
 [lib]
 name = "ffi"
 path = "ffi.rs"
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["staticlib"]
 
 [dependencies]
 rapid-qoi = "0.6.1"

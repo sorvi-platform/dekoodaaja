@@ -168,10 +168,11 @@ const QoicoubehDecoder = struct {
 
 const decoders = dekoodaaja.all_decoders ++ (if (build_options.external) .{
     QoiDecoder,
-    MagicQoiDecoder,
     ZigQoiDecoder,
     ZQoiDecoder,
-} ++ (if (@import("builtin").target.cpu.arch == .x86_64) .{
+} ++ (if (@import("builtin").target.os.tag != .windows) .{
+    MagicQoiDecoder,
+} else .{}) ++ (if (@import("builtin").target.cpu.arch == .x86_64) .{
     QoiSimdDecoder,
 } else .{}) else .{}) ++ (if (build_options.rust) .{
     RapidQoiDecoder,

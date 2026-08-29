@@ -39,7 +39,10 @@ pub fn build(b: *std.Build) void {
     });
 
     bench.lto = switch (target.result.ofmt) {
+        // zig's macho linker does not suppor atm
         .macho => .none,
+        // <https://codeberg.org/ziglang/zig/issues/31958>
+        .coff => .none,
         else => .full,
     };
 
@@ -145,7 +148,9 @@ pub fn build(b: *std.Build) void {
             else => {},
         }
         bench.root_module.addImport("qoi", qoi);
-        bench.root_module.addImport("magicqoi", magicqoi);
+        if (target.result.os.tag != .windows) {
+            bench.root_module.addImport("magicqoi", magicqoi);
+        }
         bench.root_module.addImport("zig-qoi", zig_qoi);
         bench.root_module.addImport("zqoi", zqoi);
     }
