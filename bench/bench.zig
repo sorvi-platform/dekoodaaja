@@ -19,7 +19,7 @@ fn dekoodaaja_bench_rs_malloc(n: usize, alignment: usize) callconv(.c) ?*anyopaq
 }
 
 // for things that do not allow overriding malloc
-export fn malloc(n: usize) ?*anyopaque {
+fn malloc(n: usize) callconv(.c) ?*anyopaque {
     if (c_allocator) |a| {
         return a.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
     } else {
@@ -28,7 +28,15 @@ export fn malloc(n: usize) ?*anyopaque {
     }
 }
 
-export fn free(_: ?*anyopaque) void {}
+fn free(_: ?*anyopaque) callconv(.c) void {}
+
+comptime {
+    // <https://codeberg.org/ziglang/zig/issues/36678>
+    if (!@import("builtin").target.isMuslLibC()) {
+        @export(&malloc, .{ .name = "malloc" });
+        @export(&free, .{ .name = "free" });
+    }
+}
 
 const QoiDecoder = struct {
     const name = "qoi <https://github.com/phoboslab/qoi.git>";
