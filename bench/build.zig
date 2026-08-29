@@ -162,7 +162,8 @@ pub fn build(b: *std.Build) void {
                 .{
                     .manifest_path = b.path("rust/Cargo.toml"),
                     .cargo_args = &.{
-                        "--quiet", "--profile",
+                        "--quiet",
+                        "--profile",
                         switch (optimize) {
                             .ReleaseSmall => "small",
                             .ReleaseFast => "release",
@@ -185,6 +186,7 @@ pub fn build(b: *std.Build) void {
             const mod = c.createModule();
             mod.addLibraryPath(cargo);
             mod.linkSystemLibrary("ffi", .{});
+            mod.link_libcpp = true;
             break :D mod;
         };
         bench.root_module.addImport("rs", rs);
