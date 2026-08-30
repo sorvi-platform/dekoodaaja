@@ -26,8 +26,8 @@
             .hash = "qoi-0.1.0-5Hmo8h9rAAAM9dNYAHzY4iCP5LeCN54nzd0zEf9ebjUw",
         },
         .zqoi = .{
-            .url = "git+https://codeberg.org/Pivok/zqoi.git#6c5c0d2803a5b01a3e4fdebadfdb93fde0e2b1fd",
-            .hash = "zqoi-0.5.1-9-SSGnFTAABlwxf9UHNAo3LvUPIrEP-KNpwHaMPSq7ML",
+            .url = "git+https://codeberg.org/Pivok/zqoi#7f584e886736dcf9838d6c75f6e3c692765dff1a",
+            .hash = "zqoi-0.6.0-9-SSGkZUAAC1g4Xt-qDJUanGyiahY6Q17vLKQ8F-60-x",
         },
     },
     .paths = .{""},
