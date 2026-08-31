@@ -43,7 +43,8 @@ pub fn build(b: *std.Build) void {
         .macho => .none,
         // <https://codeberg.org/ziglang/zig/issues/31958>
         .coff => .none,
-        else => .full,
+        // zig's self-hosted linker is unstable at the moment
+        else => if (optimize == .Debug) .none else .full,
     };
 
     if (external) {
@@ -168,7 +169,7 @@ pub fn build(b: *std.Build) void {
                             .ReleaseSmall => "small",
                             .ReleaseFast => "release",
                             .ReleaseSafe => "release",
-                            .Debug => "debug",
+                            .Debug => "dev",
                         },
                     },
                 },

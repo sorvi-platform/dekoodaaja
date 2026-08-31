@@ -1,6 +1,6 @@
 # Dekoodaaja
 
-Providers fast decoders for various image formats. (Currently only QOI)
+Provides fast decoders for various image formats. (Currently only QOI)
 
 ## Benchmarks
 
