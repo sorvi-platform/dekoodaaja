@@ -99,12 +99,11 @@ pub const Error = error{ InvalidHeader, InvalidRleChunk } || std.Io.Reader.Error
 pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Error!Header {
     if (try source.takeInt(u32, .native) != Header.magic) return error.InvalidHeader;
 
-    const native_endian = @import("builtin").target.cpu.arch.endian();
     const hdr: Header = .{
         .w = try source.takeInt(u32, .big),
         .h = try source.takeInt(u32, .big),
-        .channels = source.takeEnum(Channels, native_endian) catch return error.InvalidHeader,
-        .colorspace = source.takeEnum(Colorspace, native_endian) catch return error.InvalidHeader,
+        .channels = source.takeEnum(Channels, .native) catch return error.InvalidHeader,
+        .colorspace = source.takeEnum(Colorspace, .native) catch return error.InvalidHeader,
     };
 
     const size = std.math.mul(usize, hdr.w, hdr.h) catch return error.InvalidHeader;
