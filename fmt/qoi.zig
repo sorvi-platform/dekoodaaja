@@ -37,13 +37,13 @@ const Op = packed struct(u8) {
 };
 
 const Pixel = packed struct(u32) {
-    b: u8,
-    g: u8,
-    r: u8,
-    a: u8,
+    c: switch (@import("builtin").cpu.arch.endian()) {
+        .little => packed struct(u32) { b: u8, g: u8, r: u8, a: u8 },
+        .big => packed struct(u32) { a: u8, r: u8, g: u8, b: u8 },
+    },
 
-    const black: @This() = .{ .r = 0, .g = 0, .b = 0, .a = 0xff };
-    const transparent: @This() = .{ .r = 0, .g = 0, .b = 0, .a = 0 };
+    const black: @This() = .{ .c = .{ .r = 0, .g = 0, .b = 0, .a = 0xff } };
+    const transparent: @This() = .{ .c = .{ .r = 0, .g = 0, .b = 0, .a = 0 } };
 
     fn hash(self: @This()) u6 {
         const weights: @Vector(4, u8) = .{ 7, 5, 3, 11 };
@@ -125,7 +125,7 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Erro
     loop: while (index < buffer.len) : (index += 1) {
         const op: Op = @bitCast(try source.takeByte());
         switch (op.toInt()) {
-            0b11111110 => pixel = Pixel.fromRgb((try takeArray(source, 3)), pixel.a),
+            0b11111110 => pixel = Pixel.fromRgb((try takeArray(source, 3)), pixel.c.a),
             0b11111111 => pixel = Pixel.fromRgba((try takeArray(source, 4))),
             0b00000000...0b00111111 => {
                 pixel = lut[op.data];
