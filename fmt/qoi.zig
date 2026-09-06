@@ -19,6 +19,7 @@ pub const Header = struct {
     h: u32,
     channels: Channels,
     colorspace: Colorspace,
+    const magic: u32 = std.mem.readInt(u32, "qoif", .native);
 };
 
 const Op = packed struct(u8) {
@@ -88,7 +89,7 @@ pub fn detectExtension(path: []const u8) bool {
 }
 
 pub fn detectStream(source: *std.Io.Reader) bool {
-    return std.mem.eql(u8, source.peekArray(4) catch return false, "qoif");
+    return (source.peekInt(u32, .native) catch return false) == Header.magic;
 }
 
 pub const Error = error{ InvalidHeader, InvalidRleChunk } || std.Io.Reader.Error || std.Io.Writer.Error;
@@ -96,7 +97,7 @@ pub const Error = error{ InvalidHeader, InvalidRleChunk } || std.Io.Reader.Error
 /// Decode QOI image from a source
 /// Writes pixels in [31:0] A:R:G:B 8:8:8:8 format (BGRA little-endian) to the sink
 pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Error!Header {
-    if (!std.mem.eql(u8, try source.takeArray(4), "qoif")) return error.InvalidHeader;
+    if (try source.takeInt(u32, .native) != Header.magic) return error.InvalidHeader;
 
     const native_endian = @import("builtin").target.cpu.arch.endian();
     const hdr: Header = .{
