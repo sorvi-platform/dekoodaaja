@@ -1,26 +1,10 @@
 const std = @import("std");
+const Header = @import("../root.zig").Header;
 
 pub const name = "qoi";
 pub const ext = "qoi";
 pub const mime = "image/qoi";
-
-pub const Channels = enum(u8) {
-    rgb = 3,
-    rgba = 4,
-};
-
-pub const Colorspace = enum(u8) {
-    srgb = 0,
-    linear = 1,
-};
-
-pub const Header = struct {
-    w: u32,
-    h: u32,
-    channels: Channels,
-    colorspace: Colorspace,
-    const magic: u32 = std.mem.readInt(u32, "qoif", .native);
-};
+const magic: u32 = std.mem.readInt(u32, "qoif", .native);
 
 const Op = packed struct(u8) {
     data: u6,
@@ -89,7 +73,7 @@ pub fn detectExtension(path: []const u8) bool {
 }
 
 pub fn detectStream(source: *std.Io.Reader) bool {
-    return (source.peekInt(u32, .native) catch return false) == Header.magic;
+    return (source.peekInt(u32, .native) catch return false) == magic;
 }
 
 pub const Error = error{ InvalidHeader, InvalidRleChunk } || std.Io.Reader.Error || std.Io.Writer.Error;
@@ -97,13 +81,28 @@ pub const Error = error{ InvalidHeader, InvalidRleChunk } || std.Io.Reader.Error
 /// Decode QOI image from a source
 /// Writes pixels in [31:0] A:R:G:B 8:8:8:8 format (BGRA little-endian) to the sink
 pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Error!Header {
-    if (try source.takeInt(u32, .native) != Header.magic) return error.InvalidHeader;
+    if (try source.takeInt(u32, .native) != magic) return error.InvalidHeader;
 
-    const hdr: Header = .{
-        .w = try source.takeInt(u32, .big),
-        .h = try source.takeInt(u32, .big),
-        .channels = source.takeEnum(Channels, .native) catch return error.InvalidHeader,
-        .colorspace = source.takeEnum(Colorspace, .native) catch return error.InvalidHeader,
+    const hdr: Header = D: {
+        const w: u32, const h: u32 = .{ try source.takeInt(u32, .big), try source.takeInt(u32, .big) };
+        const channels, const colorspace = .{ try source.takeByte(), try source.takeByte() };
+        break :D .{
+            .w = w,
+            .h = h,
+            .colorspace = switch (channels) {
+                3 => switch (colorspace) {
+                    0 => .srgb,
+                    1 => .rgb,
+                    else => return error.InvalidHeader,
+                },
+                4 => switch (colorspace) {
+                    0 => .srgb_linear_alpha,
+                    1 => .rgba,
+                    else => return error.InvalidHeader,
+                },
+                else => return error.InvalidHeader,
+            },
+        };
     };
 
     const size = std.math.mul(usize, hdr.w, hdr.h) catch return error.InvalidHeader;

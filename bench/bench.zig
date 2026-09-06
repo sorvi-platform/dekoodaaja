@@ -51,7 +51,7 @@ const QoiDecoder = struct {
         const raw_size = desc.width * desc.height * 4;
         sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
-        return .{ .w = desc.width, .h = desc.height };
+        return .{ .w = desc.width, .h = desc.height, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -68,7 +68,7 @@ const QoiSimdDecoder = struct {
         const raw_size = desc.width * desc.height * 4;
         sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
-        return .{ .w = desc.width, .h = desc.height };
+        return .{ .w = desc.width, .h = desc.height, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -87,7 +87,7 @@ const MagicQoiDecoder = struct {
         const raw_size = w * h * 4;
         sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
-        return .{ .w = w, .h = h };
+        return .{ .w = w, .h = h, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -103,7 +103,7 @@ const ZigQoiDecoder = struct {
         const img = try qoi.decodeStream(allocating.allocator, source);
         allocating.writer.buffer = std.mem.sliceAsBytes(img.pixels);
         sink.advance(sink.buffer.len);
-        return .{ .w = img.width, .h = img.height };
+        return .{ .w = img.width, .h = img.height, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -119,7 +119,7 @@ const ZQoiDecoder = struct {
         const img: qoi.Image = try .fromReader(allocating.allocator, source);
         allocating.writer.buffer = std.mem.sliceAsBytes(img.pixels);
         sink.advance(sink.buffer.len);
-        return .{ .w = img.width, .h = img.height };
+        return .{ .w = img.width, .h = img.height, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -136,7 +136,7 @@ const RapidQoiDecoder = struct {
         const raw_size = hdr.width * hdr.height * 4;
         sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
-        return .{ .w = hdr.width, .h = hdr.height };
+        return .{ .w = hdr.width, .h = hdr.height, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -153,7 +153,7 @@ const QoiRustDecoder = struct {
         const raw_size = hdr.width * hdr.height * 4;
         sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
-        return .{ .w = hdr.width, .h = hdr.height };
+        return .{ .w = hdr.width, .h = hdr.height, .colorspace = .srgb_linear_alpha };
     }
 };
 
@@ -170,7 +170,7 @@ const QoicoubehDecoder = struct {
         const raw_size = hdr.width * hdr.height * 4;
         sink.buffer = std.mem.sliceAsBytes(bytes[0..raw_size]);
         sink.advance(raw_size);
-        return .{ .w = hdr.width, .h = hdr.height };
+        return .{ .w = hdr.width, .h = hdr.height, .colorspace = .srgb_linear_alpha };
     }
 };
 

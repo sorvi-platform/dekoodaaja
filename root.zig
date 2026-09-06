@@ -5,7 +5,27 @@ pub const all_decoders: []const type = &.{
     qoi,
 };
 
-pub const Header = struct { w: u32, h: u32 };
+pub const Colorspace = enum {
+    srgb,
+    srgb_linear_alpha,
+    rgb,
+    rgba,
+
+    pub fn channels(self: @This()) u2 {
+        switch (self) {
+            .srgb => 3,
+            .srgba => 4,
+            .rgb => 3,
+            .rgba => 4,
+        }
+    }
+};
+
+pub const Header = struct {
+    w: u32,
+    h: u32,
+    colorspace: Colorspace,
+};
 
 /// Detect the image format from a path extension
 pub fn detectExtension(path: []const u8, comptime decoders: []const type) ?[]const u8 {
@@ -31,11 +51,10 @@ pub const Error = error{MalformedStream} || std.Io.Reader.Error || std.Io.Writer
 pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer, comptime decoders: []const type) Error!?Header {
     inline for (decoders) |d| {
         if (d.detectStream(source)) {
-            const hdr = d.decode(source, sink) catch |err| return switch (err) {
+            return d.decode(source, sink) catch |err| return switch (err) {
                 error.EndOfStream, error.ReadFailed, error.WriteFailed => |e| e,
                 else => error.MalformedStream,
             };
-            return .{ .w = hdr.w, .h = hdr.h };
         }
     }
     return null;
