@@ -145,7 +145,7 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Erro
         lut[pixel.hash()] = pixel;
     }
 
-    sink.advance(index * @sizeOf(Pixel));
+    sink.advance(raw_size);
     std.debug.assert(sink.end == raw_size);
     return hdr;
 }
