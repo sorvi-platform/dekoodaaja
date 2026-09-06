@@ -58,17 +58,19 @@ const Pixel = packed struct(u32) {
         const diff: Stream = @bitCast(data);
         const bias: @Vector(4, i8) = .{ -2, -2, -2, 0 };
         const vec: @Vector(4, i8) = .{ diff.b, diff.g, diff.r, 0 };
-        return @bitCast(self.toVector() +% @as(@Vector(4, u8), @bitCast(vec + bias)));
+        const sum: @Vector(4, u8) = @bitCast(vec + bias);
+        return @bitCast(self.toVector() +% sum);
     }
 
     fn diffLuma(self: @This(), data: u6, extra: u8) @This() {
         const Stream = packed struct(u16) { g: u6, _: u2, b: u4, r: u4 };
         const payload: [2]u8 = .{ data, extra };
-        const diff: Stream = @bitCast(payload);
+        const diff: Stream = @bitCast(std.mem.readInt(u16, &payload, .little));
         const g: @Vector(4, i8) = .{ diff.g, 0, diff.g, 0 };
         const bias: @Vector(4, i8) = .{ -40, -32, -40, 0 };
         const vec: @Vector(4, i8) = .{ diff.b, diff.g, diff.r, 0 };
-        return @bitCast(self.toVector() +% @as(@Vector(4, u8), @bitCast(vec + g + bias)));
+        const sum: @Vector(4, u8) = @bitCast(vec + g + bias);
+        return @bitCast(self.toVector() +% sum);
     }
 
     fn fromRgb(rgb: [3]u8, a: u8) @This() {
