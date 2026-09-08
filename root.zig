@@ -14,7 +14,7 @@ pub const Colorspace = enum {
     pub fn channels(self: @This()) u2 {
         switch (self) {
             .srgb => 3,
-            .srgba => 4,
+            .srgb_linear_alpha => 4,
             .rgb => 3,
             .rgba => 4,
         }
