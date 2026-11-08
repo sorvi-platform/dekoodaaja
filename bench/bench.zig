@@ -134,7 +134,7 @@ const QoicoubehDecoder = struct {
     }
 };
 
-const decoders = dekoodaaja.all_decoders ++ (if (build_options.external) .{
+const decoders = dekoodaaja.standard_decoders ++ (if (build_options.external) .{
     QoiDecoder,
     ZigQoiDecoder,
     ZQoiDecoder,
@@ -168,11 +168,13 @@ fn benchDecoder(dec: type, arena: *std.heap.ArenaAllocator, root: std.Progress.N
         total_time += @as(u64, @intCast(end_point - start_point));
 
         if (@hasDecl(dec, "is_swizzled") and dec.is_swizzled) {
-            if (hdr.w != 512 or hdr.h != 512 or !std.mem.eql(u8, swizzled, allocating.written()))
+            if (hdr.w != 512 or hdr.h != 512 or !std.mem.eql(u8, swizzled, allocating.written())) {
                 return error.DecodingError;
+            }
         } else {
-            if (hdr.w != 512 or hdr.h != 512 or !std.mem.eql(u8, raw_data, allocating.written()))
+            if (hdr.w != 512 or hdr.h != 512 or !std.mem.eql(u8, raw_data, allocating.written())) {
                 return error.DecodingError;
+            }
         }
 
         node.completeOne();

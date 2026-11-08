@@ -1,4 +1,4 @@
-pub const all_decoders: []const type = &.{
+pub const standard_decoders: []const type = &.{
     qoi,
 };
 
@@ -57,6 +57,7 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer, comp
     return null;
 }
 
+// standard decoders
 pub const qoi = @import("fmt/qoi.zig");
 
 const std = @import("std");
