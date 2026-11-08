@@ -1,72 +1,7 @@
-const std = @import("std");
-const Header = @import("../root.zig").Header;
-
 pub const name = "qoi";
 pub const ext = "qoi";
 pub const mime = "image/qoi";
 const magic: u32 = std.mem.readInt(u32, "qoif", .native);
-
-const Op = packed struct(u8) {
-    data: u6,
-    tag: u2,
-
-    fn rle(n: u6) @This() {
-        std.debug.assert(n > 0 and n <= 62);
-        return .{ .tag = 0b11, .data = n - 1 };
-    }
-
-    fn toInt(self: @This()) u8 {
-        return @bitCast(self);
-    }
-};
-
-const Pixel = packed struct(u32) {
-    c: switch (@import("builtin").cpu.arch.endian()) {
-        .little => packed struct(u32) { b: u8, g: u8, r: u8, a: u8 },
-        .big => packed struct(u32) { a: u8, r: u8, g: u8, b: u8 },
-    },
-
-    const black: @This() = .{ .c = .{ .r = 0, .g = 0, .b = 0, .a = 0xff } };
-    const transparent: @This() = .{ .c = .{ .r = 0, .g = 0, .b = 0, .a = 0 } };
-
-    fn hash(self: @This()) u6 {
-        const weights: @Vector(4, u8) = .{ 7, 5, 3, 11 };
-        return @truncate(@reduce(.Add, self.toVector() *% weights));
-    }
-
-    fn toVector(self: @This()) @Vector(4, u8) {
-        return @bitCast(self);
-    }
-
-    fn diffRgb(self: @This(), data: u6) @This() {
-        const Stream = packed struct(u6) { b: u2, g: u2, r: u2 };
-        const diff: Stream = @bitCast(data);
-        const bias: @Vector(4, i8) = .{ -2, -2, -2, 0 };
-        const vec: @Vector(4, i8) = .{ diff.b, diff.g, diff.r, 0 };
-        const sum: @Vector(4, u8) = @bitCast(vec + bias);
-        return @bitCast(self.toVector() +% sum);
-    }
-
-    fn diffLuma(self: @This(), data: u6, extra: u8) @This() {
-        const Stream = packed struct(u16) { g: u6, _: u2, b: u4, r: u4 };
-        const payload: [2]u8 = .{ data, extra };
-        const diff: Stream = @bitCast(std.mem.readInt(u16, &payload, .little));
-        const g: @Vector(4, i8) = .{ diff.g, 0, diff.g, 0 };
-        const bias: @Vector(4, i8) = .{ -40, -32, -40, 0 };
-        const vec: @Vector(4, i8) = .{ diff.b, diff.g, diff.r, 0 };
-        const sum: @Vector(4, u8) = @bitCast(vec + g + bias);
-        return @bitCast(self.toVector() +% sum);
-    }
-
-    fn fromRgb(rgb: [3]u8, a: u8) @This() {
-        return fromRgba(.{ rgb[0], rgb[1], rgb[2], a });
-    }
-
-    fn fromRgba(rgba: [4]u8) @This() {
-        const swizzle: @Vector(4, u8) = .{ 2, 1, 0, 3 };
-        return @bitCast(@shuffle(u8, rgba, undefined, swizzle));
-    }
-};
 
 pub fn detectExtension(path: []const u8) bool {
     return std.mem.endsWith(u8, path, "." ++ ext);
@@ -149,6 +84,68 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) Erro
     return hdr;
 }
 
+const Op = packed struct(u8) {
+    data: u6,
+    tag: u2,
+
+    fn rle(n: u6) @This() {
+        std.debug.assert(n > 0 and n <= 62);
+        return .{ .tag = 0b11, .data = n - 1 };
+    }
+
+    fn toInt(self: @This()) u8 {
+        return @bitCast(self);
+    }
+};
+
+const Pixel = packed struct(u32) {
+    c: switch (@import("builtin").cpu.arch.endian()) {
+        .little => packed struct(u32) { b: u8, g: u8, r: u8, a: u8 },
+        .big => packed struct(u32) { a: u8, r: u8, g: u8, b: u8 },
+    },
+
+    const black: @This() = .{ .c = .{ .r = 0, .g = 0, .b = 0, .a = 0xff } };
+    const transparent: @This() = .{ .c = .{ .r = 0, .g = 0, .b = 0, .a = 0 } };
+
+    fn hash(self: @This()) u6 {
+        const weights: @Vector(4, u8) = .{ 7, 5, 3, 11 };
+        return @truncate(@reduce(.Add, self.toVector() *% weights));
+    }
+
+    fn toVector(self: @This()) @Vector(4, u8) {
+        return @bitCast(self);
+    }
+
+    fn diffRgb(self: @This(), data: u6) @This() {
+        const Stream = packed struct(u6) { b: u2, g: u2, r: u2 };
+        const diff: Stream = @bitCast(data);
+        const bias: @Vector(4, i8) = .{ -2, -2, -2, 0 };
+        const vec: @Vector(4, i8) = .{ diff.b, diff.g, diff.r, 0 };
+        const sum: @Vector(4, u8) = @bitCast(vec + bias);
+        return @bitCast(self.toVector() +% sum);
+    }
+
+    fn diffLuma(self: @This(), data: u6, extra: u8) @This() {
+        const Stream = packed struct(u16) { g: u6, _: u2, b: u4, r: u4 };
+        const payload: [2]u8 = .{ data, extra };
+        const diff: Stream = @bitCast(std.mem.readInt(u16, &payload, .little));
+        const g: @Vector(4, i8) = .{ diff.g, 0, diff.g, 0 };
+        const bias: @Vector(4, i8) = .{ -40, -32, -40, 0 };
+        const vec: @Vector(4, i8) = .{ diff.b, diff.g, diff.r, 0 };
+        const sum: @Vector(4, u8) = @bitCast(vec + g + bias);
+        return @bitCast(self.toVector() +% sum);
+    }
+
+    fn fromRgb(rgb: [3]u8, a: u8) @This() {
+        return fromRgba(.{ rgb[0], rgb[1], rgb[2], a });
+    }
+
+    fn fromRgba(rgba: [4]u8) @This() {
+        const swizzle: @Vector(4, u8) = .{ 2, 1, 0, 3 };
+        return @bitCast(@shuffle(u8, rgba, undefined, swizzle));
+    }
+};
+
 // better codegen for ReleaseSmall
 inline fn takeArray(r: *std.Io.Reader, n: comptime_int) ![n]u8 {
     const result = try @call(.always_inline, std.Io.Reader.peek, .{ r, n });
@@ -181,3 +178,6 @@ fn memset(T: type, dst: []T, val: T) void {
         },
     }
 }
+
+const Header = @import("../root.zig").Header;
+const std = @import("std");

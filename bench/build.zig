@@ -2,9 +2,6 @@
 // even if marked lazy do not get accidentally included in
 // the closure of zig package manager integrations
 
-const std = @import("std");
-const build_crab = @import("build.crab");
-
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -197,3 +194,6 @@ pub fn build(b: *std.Build) void {
     const bench_step = b.step("run", "Run the benchmark");
     bench_step.dependOn(&run_bench.step);
 }
+
+const build_crab = @import("build.crab");
+const std = @import("std");

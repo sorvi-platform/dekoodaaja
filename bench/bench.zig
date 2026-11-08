@@ -1,44 +1,3 @@
-const std = @import("std");
-const build_options = @import("build_options");
-const dekoodaaja = @import("dekoodaaja");
-
-const total_rounds = 4096;
-const raw_data = @embedFile("assets/zero.raw");
-
-// this is the arena allocator, for C libs this is used to implement custom malloc
-// free is always no-op as arena memory is reused, this effecively gets rid of
-// allocator bias for C impls
-var c_allocator: ?std.mem.Allocator = null;
-
-export fn dekoodaaja_bench_malloc(n: usize) ?*anyopaque {
-    return c_allocator.?.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
-}
-
-fn dekoodaaja_bench_rs_malloc(n: usize, alignment: usize) callconv(.c) ?*anyopaque {
-    return c_allocator.?.rawAlloc(n, .fromByteUnits(alignment), @returnAddress());
-}
-
-// for things that do not allow overriding malloc
-fn malloc(n: usize) callconv(.c) ?*anyopaque {
-    if (c_allocator) |a| {
-        return a.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
-    } else {
-        // leaks but whatever
-        return std.heap.smp_allocator.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
-    }
-}
-
-fn free(_: ?*anyopaque) callconv(.c) void {}
-
-comptime {
-    const builtin = @import("builtin");
-    // <https://codeberg.org/ziglang/zig/issues/36678>
-    if (builtin.zig_version.minor < 17 and !builtin.target.isMuslLibC()) {
-        @export(&malloc, .{ .name = "malloc" });
-        @export(&free, .{ .name = "free" });
-    }
-}
-
 const QoiDecoder = struct {
     const name = "qoi <https://github.com/phoboslab/qoi.git>";
     const ext = "qoi";
@@ -299,3 +258,44 @@ pub const main = switch (@import("builtin").zig_version.minor) {
     15 => zig15main,
     else => zig16main,
 };
+
+// this is the arena allocator, for C libs this is used to implement custom malloc
+// free is always no-op as arena memory is reused, this effecively gets rid of
+// allocator bias for C impls
+var c_allocator: ?std.mem.Allocator = null;
+
+export fn dekoodaaja_bench_malloc(n: usize) ?*anyopaque {
+    return c_allocator.?.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
+}
+
+fn dekoodaaja_bench_rs_malloc(n: usize, alignment: usize) callconv(.c) ?*anyopaque {
+    return c_allocator.?.rawAlloc(n, .fromByteUnits(alignment), @returnAddress());
+}
+
+// for things that do not allow overriding malloc
+fn malloc(n: usize) callconv(.c) ?*anyopaque {
+    if (c_allocator) |a| {
+        return a.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
+    } else {
+        // leaks but whatever
+        return std.heap.smp_allocator.rawAlloc(n, .of(std.c.max_align_t), @returnAddress());
+    }
+}
+
+fn free(_: ?*anyopaque) callconv(.c) void {}
+
+comptime {
+    const builtin = @import("builtin");
+    // <https://codeberg.org/ziglang/zig/issues/36678>
+    if (builtin.zig_version.minor < 17 and !builtin.target.isMuslLibC()) {
+        @export(&malloc, .{ .name = "malloc" });
+        @export(&free, .{ .name = "free" });
+    }
+}
+
+const total_rounds = 4096;
+const raw_data = @embedFile("assets/zero.raw");
+
+const dekoodaaja = @import("dekoodaaja");
+const build_options = @import("build_options");
+const std = @import("std");

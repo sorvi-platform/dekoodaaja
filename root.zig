@@ -1,6 +1,3 @@
-const std = @import("std");
-pub const qoi = @import("fmt/qoi.zig");
-
 pub const all_decoders: []const type = &.{
     qoi,
 };
@@ -59,3 +56,7 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer, comp
     }
     return null;
 }
+
+pub const qoi = @import("fmt/qoi.zig");
+
+const std = @import("std");
