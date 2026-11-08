@@ -60,4 +60,8 @@ pub fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer, comp
 // standard decoders
 pub const qoi = @import("fmt/qoi.zig");
 
+// raw decoders
+pub const dxt1 = @import("fmt/dxt1.zig");
+pub const dxt3 = @import("fmt/dxt3.zig");
+
 const std = @import("std");
