@@ -6,8 +6,8 @@
             .path = "../.",
         },
         .@"build.crab" = .{
-            .url = "git+https://github.com/Cloudef/build.crab.git#07ac53f658a6d719b2d798c293a2750b2a0fedcd",
-            .hash = "build_crab-0.3.0-V2z3N5OtAAC-G6dKstRU-DwFQaYlE-3fcAijPN9uJ5XR",
+            .url = "git+https://github.com/Cloudef/build.crab.git#db2e90537d4b29be27813200132dcf8785fe4eec",
+            .hash = "build_crab-0.4.0-V2z3N1-hAACD3RhT3IDfUJdUKMqqo2l9ko9ikZFi_gtG",
         },
         .qoi = .{
             .url = "git+https://github.com/phoboslab/qoi.git#97bacc86a9c4abf5a2d452102dc26546c4c670b9",

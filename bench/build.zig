@@ -44,7 +44,7 @@ pub fn build(b: *std.Build) void {
         // <https://codeberg.org/ziglang/zig/issues/31958>
         .coff => .none,
         // zig's self-hosted linker is unstable at the moment
-        else => if (optimize == .Debug) .none else .full,
+        else => if (optimize == .debug) .none else .full,
     };
 
     if (external) {

@@ -12,7 +12,7 @@
       # Zig flake helper
       # Check the flake.nix in zig2nix project for more options:
       # <https://github.com/Cloudef/zig2nix/blob/master/flake.nix>
-      env = zig2nix.outputs.zig-env.${system} { zig = zig2nix.outputs.packages.${system}.zig-0_16_0; };
+      env = zig2nix.outputs.zig-env.${system} { zig = zig2nix.outputs.packages.${system}.zig-0_17_1; };
 
       # nixpkgs does not provide rust with rust-src, so that can't cross-compile
       rust = fenix.packages.${system}.complete.withComponents [

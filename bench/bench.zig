@@ -31,8 +31,9 @@ fn malloc(n: usize) callconv(.c) ?*anyopaque {
 fn free(_: ?*anyopaque) callconv(.c) void {}
 
 comptime {
+    const builtin = @import("builtin");
     // <https://codeberg.org/ziglang/zig/issues/36678>
-    if (!@import("builtin").target.isMuslLibC()) {
+    if (builtin.zig_version.minor < 17 and !builtin.target.isMuslLibC()) {
         @export(&malloc, .{ .name = "malloc" });
         @export(&free, .{ .name = "free" });
     }
@@ -42,7 +43,7 @@ const QoiDecoder = struct {
     const name = "qoi <https://github.com/phoboslab/qoi.git>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const c = @import("qoi");
@@ -59,7 +60,7 @@ const QoiSimdDecoder = struct {
     const name = "qoi-simd <https://github.com/chocolate42/qoi-simd>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const c = @import("qoi-simd");
@@ -76,7 +77,7 @@ const MagicQoiDecoder = struct {
     const name = "magicqoi <https://github.com/marty1885/magicqoi>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const c = @import("magicqoi");
@@ -95,7 +96,7 @@ const ZigQoiDecoder = struct {
     const name = "zig-qoi <https://github.com/ikskuh/zig-qoi>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const qoi = @import("zig-qoi");
@@ -111,7 +112,7 @@ const ZQoiDecoder = struct {
     const name = "zqoi <https://codeberg.org/Pivok/zqoi.git>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const qoi = @import("zqoi");
@@ -127,7 +128,7 @@ const RapidQoiDecoder = struct {
     const name = "rapid-qoi <https://github.com/zakarumych/rapid-qoi>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const rs = @import("rs");
@@ -144,7 +145,7 @@ const QoiRustDecoder = struct {
     const name = "qoi-rust <https://github.com/aldanor/qoi-rust>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const rs = @import("rs");
@@ -161,7 +162,7 @@ const QoicoubehDecoder = struct {
     const name = "qoicoubeh <https://github.com/elmarco/qoi-rust>";
     const ext = "qoi";
     const mime = "image/qoi";
-    const is_swizzled = true;
+    pub const is_swizzled = true;
 
     fn decode(noalias source: *std.Io.Reader, noalias sink: *std.Io.Writer) !dekoodaaja.Header {
         const rs = @import("rs");
