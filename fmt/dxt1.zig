@@ -79,14 +79,19 @@ const Pixel = packed struct(u32) {
     }
 
     fn lerp(a: @This(), b: @This(), num: u8, den: u8) @This() {
-        const num_vec: @Vector(4, u8) = @splat(num);
-        const den_vec: @Vector(4, u8) = @splat(den);
-        return @bitCast(((den_vec - num_vec) * a.toVector() + num_vec * b.toVector()) / den_vec);
+        const num_vec: @Vector(4, u16) = @splat(num);
+        const den_vec: @Vector(4, u16) = @splat(den);
+        const a16: @Vector(4, u16) = @intCast(a.toVector());
+        const b16: @Vector(4, u16) = @intCast(b.toVector());
+        const res16 = ((den_vec - num_vec) * a16 + num_vec * b16) / den_vec;
+        return @bitCast(@as(@Vector(4, u8), @intCast(res16)));
     }
 
     fn mix(a: @This(), b: @This()) @This() {
         const half: @Vector(4, u8) = @splat(2);
-        return @bitCast((a.toVector() + b.toVector()) / half);
+        const a16: @Vector(4, u16) = @intCast(a.toVector());
+        const b16: @Vector(4, u16) = @intCast(b.toVector());
+        return @bitCast(@as(@Vector(4, u8), @intCast((a16 + b16) / half)));
     }
 };
 
